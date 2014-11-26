@@ -11,11 +11,18 @@ class Page extends AdminController {
 
 	public function add($f3) {
 		if($this->request->is('post')) {
-			$pagename = strtolower(str_replace(" ","_",$this->request->data['title']));
-			$this->Model->Pages->create($pagename);
-		
-			\StatusMessage::add('Page created succesfully','success');
-			return $f3->reroute('/admin/page/edit/' . $pagename);
+			//$pagename = strtolower(str_replace(" ","_",$this->request->data['title']));
+			$pagename = strtolower($this->request->data['title']);
+			$pagename= trim($f3->clean(strip_tags($pagename)));
+
+			if($pagename !== ""){
+				$this->Model->Pages->create($pagename);
+				\StatusMessage::add('Page created succesfully','success');
+				return $f3->reroute('/admin/page/edit/' . $pagename);
+			}else{
+				\StatusMessage::add('Page created unsuccessfully','danger');
+				return $f3->reroute('/admin/page');
+			}
 		}
 	}
 

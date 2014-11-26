@@ -68,7 +68,9 @@ class Blog extends Controller {
 
 			//Default subject
 			if(empty($this->request->data['subject'])) {
-				$comment->subject = 'RE: ' . $post->title;
+				$comment->subject = 'RE: ' . $f3->clean($post->title);
+			}else {
+				$comment->subject = $f3->clean($this->request->data['subject']);
 			}
 
 			$comment->save();
