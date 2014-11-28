@@ -106,6 +106,8 @@ class Blog extends Controller {
 	public function search($f3) {
 		if($this->request->is('post')) {
 			extract($this->request->data);
+			
+			$search = htmlspecialchars($search, ENT_QUOTES, 'UTF-8');
 			$f3->set('search',$search);
 
 			//Get search results
