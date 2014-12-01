@@ -110,7 +110,6 @@ class User extends Controller {
 				
 			}else{ // if new password hash === old password hash, then do not change the password (set it back to the oldpw hash)
 				$u->password = $oldpw;
-				
 			}
 			
 			$u->save();

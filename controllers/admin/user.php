@@ -19,11 +19,11 @@ class User extends AdminController {
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
 
-			//1) Check if input password is not hashed ----- AND ----- 
-			//2) check if the input password hash is not equal to the old hash 
-			if ($this->Auth->login($u->username,$u->password) === false && $oldpw !== $bcrypt->hash($u->password,null, 10)) {
+			//1) Check if the password is changed  ---- AND ---- the old password hash is not equal to the newpassword hash
+			if ($this->request->data['password'] !== $oldpw && $oldpw !== $bcrypt->hash($this->request->data['password'],null, 10)) {
 				$u->password = $bcrypt->hash($u->password,null, 10);
-			}else{ // if input password hash === old hash && is valid, do not change the password (set it back to the oldpw hash)
+				
+			}else{ // if new password hash === old password hash, then do not change the password (set it back to the oldpw hash)
 				$u->password = $oldpw;
 			}
 
