@@ -10,9 +10,10 @@
  echo $form->start();
  echo $form->add('username');
  echo $form->add('password',array('type' => 'password','value' => ''));
- 
+
+ //create a new captcha image
  $img = new Image();
- $img->captcha('arial.ttf',16,7,'SESSION.captcha_code');
+ $img->captcha('arial.ttf',16,7,'SESSION.captcha_code'); // arial.ttf stored in the view
  
  echo $form->add('captcha');
  ?>

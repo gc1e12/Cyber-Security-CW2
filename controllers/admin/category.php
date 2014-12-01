@@ -17,10 +17,15 @@
 		public function add($f3) {
 			if($this->request->is('post')) {
 				$category = $this->Model->Categories;
-				$category->title = $f3->clean($this->request->data['title']);
-				$category->save();
+				$category->title = $this->request->data['title'];
+				$category->title= htmlspecialchars($category->title, ENT_QUOTES, 'UTF-8');
 
-				\StatusMessage::add('Category added succesfully','success');
+				if($category->title !== "")	{
+					$category->save();
+					\StatusMessage::add('Category added succesfully','success');
+				}else{
+					\StatusMessage::add('Category name cannot be empty','danger');
+				}		
 				return $f3->reroute('/admin/category');
 			}
 		}
@@ -42,7 +47,8 @@
 			$categoryid = $f3->get('PARAMS.3');
 			$category = $this->Model->Categories->fetchById($categoryid);
 			if($this->request->is('post')) {
-				$category->title = $this->request->data['title'];
+				$category->title = htmlspecialchars($this->request->data['title'], ENT_QUOTES, 'UTF-8');
+			
 				$category->save();
 				\StatusMessage::add('Category updated succesfully','success');
 				return $f3->reroute('/admin/category');
