@@ -67,6 +67,12 @@
 		public function edit($f3) {
 			$postid = $f3->get('PARAMS.3');
 			$post = $this->Model->Posts->fetchById($postid);
+
+			//if $post is false, it means that it is an invalid id. therefore, route back to edit page.
+			if ($post === false){
+				return $f3->reroute('/admin/blog');
+			}
+
 			$blog = $this->Model->map($post,array('post_id','Post_Categories','category_id'),'Categories',false);
 			if ($this->request->is('post')) {
 				extract($this->request->data);

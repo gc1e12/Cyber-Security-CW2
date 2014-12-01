@@ -18,13 +18,13 @@ class Blog extends Controller {
 	}
 
 	public function view($f3) {
-		$id = $f3->clean($f3->get('PARAMS.3'));
+		$id = $f3->get('PARAMS.3');
 		if(empty($id)) {
 			return $f3->reroute('/');
 		}
 		$post = $this->Model->Posts->fetch($id);
 		if(empty($post)) {
-			return $f3->route('/');
+			return $f3->reroute('/');
 		}
 		
 		$blog = $this->Model->map($post,'user_id','Users');
