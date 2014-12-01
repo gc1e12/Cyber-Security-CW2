@@ -10,17 +10,20 @@
  echo $form->start();
  echo $form->add('username');
  echo $form->add('password',array('type' => 'password','value' => ''));
- echo $form->add('captcha');
+ 
  $img = new Image();
  $img->captcha('arial.ttf',16,7,'SESSION.captcha_code');
+ 
+ echo $form->add('captcha');
+ ?>
+
+<img src="data:image/png;base64,<?= base64_encode($img->dump()); ?>" /> <br/><br/>
+
+ <?
  echo $form->add('Login',array('type' => 'submit'));
  echo $form->end();
-
- 
- echo '<br/><br/><br/>'.$_SESSION['captcha_code'];
-
+ //echo '<br/><br/><br/>'.$_SESSION['captcha_code'];
 ?>
-<img src="data:image/png;base64,<?= base64_encode($img->dump()); ?>" />
 <hr/><p>Don't have an account yet? Why not <a href="<?=$site['base']?>/user/add">Register</a>
 
 </div>

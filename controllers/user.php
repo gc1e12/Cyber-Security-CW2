@@ -59,22 +59,21 @@ class User extends Controller {
 
 			list($username,$password, $captcha) = array($this->request->data['username'], $this->request->data['password'], $this->request->data['captcha']);
    			
-   			if (trim($captcha) == ''){
-   			  StatusMessage::add('You need to provide captcha as well','danger');
-   			} elseif ($captcha == $_SESSION['captcha_code']){
-   			 if ($this->Auth->login($username,$password)) {
+   			// check if captcha code is valid before processing the login request.
+   			if ($captcha === $_SESSION['captcha_code']){
+   			 if ($this->Auth->login($username,$password)) { // validation process for user login.
    			  StatusMessage::add('Logged in succesfully','success');
    			 
    			  if(isset($_GET['from'])) {
    			   $f3->reroute($_GET['from']);
    			  } else {
-   			   $f3->reroute('/'); 
+   			   $f3->reroute('/');
    			  }
    			 } else {
    			  StatusMessage::add('Invalid username or password','danger');
    			 }
-   			} else {
-   			 StatusMessage::add('Invalid captcha','danger');
+   			} else { // if incorrect captcha provided.
+   			 StatusMessage::add('Please enter a valid captcha code','danger');
    			}
 		}		
 	}
