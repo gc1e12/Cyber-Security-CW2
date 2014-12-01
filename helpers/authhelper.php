@@ -23,19 +23,26 @@
 
 		/** Look up user by username and password and log them in */
 		public function login($username,$password) {
-			$f3=Base::instance();						
+			$f3=Base::instance();
+			$crypt = \Bcrypt::instance();						
 			$db = $this->controller->db;
-			//$results = $db->query("SELECT * FROM `users` WHERE `username`='$username' AND `password`='$password'");
+		
 			$f3->set('user', $username);
 			$f3->set('pass', $password);
-			$results = $db->connection->exec("SELECT * FROM `users` WHERE `username`= :user AND `password`= :pass",
+			/*$results = $db->connection->exec("SELECT * FROM `users` WHERE `username`= :user AND `password`= :pass",
 												array(':user'=>$f3->get('user'),':pass'=>$f3->get('pass'))
+											);*/
+			$results = $db->connection->exec("SELECT * FROM `users` WHERE `username`= :user",
+												array(':user'=>$f3->get('user'))
 											);
-			
-			if (!empty($results)) {		
-				$user = $results[0];	
-				$this->setupSession($user);
-				return $this->forceLogin($user);
+
+			if (!empty($results)) {
+				//check if the hashpassword is identical with the stored password. (string pw, hash pw)
+				if($crypt->verify ($f3->get('pass'), $results[0]['password'])===true) {
+					$user = $results[0];	
+					$this->setupSession($user);
+					return $this->forceLogin($user);
+				}				
 			} 
 			return false;
 		}

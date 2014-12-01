@@ -14,6 +14,8 @@ class User extends Controller {
 	}
 
 	public function add($f3) {
+		$bcrypt = \Bcrypt::instance();
+
 		if($this->request->is('post')) {
 			extract($this->request->data);
 			$check = $this->Model->Users->fetch(array('username' => $username));
@@ -30,6 +32,8 @@ class User extends Controller {
 				if(empty($displayname)) {
 					$user->displayname = $user->username;
 				}
+				// encrypt the password before storing it in the database
+				$user->password = $bcrypt ->hash($user->password,null, 10); 
 				$user->save();	
 				StatusMessage::add('Registration complete','success');
 				return $f3->reroute('/user/login');
@@ -40,6 +44,7 @@ class User extends Controller {
 	public function login($f3) {
 		if ($this->request->is('post')) {
 			list($username,$password) = array($this->request->data['username'],$this->request->data['password']);
+
 			if ($this->Auth->login($username,$password)) {
 				StatusMessage::add('Logged in succesfully','success');
 			
@@ -61,10 +66,14 @@ class User extends Controller {
 	}
 
 
-	public function profile($f3) {	
+	public function profile($f3) {
+		$bcrypt = \Bcrypt::instance();	
 		$id = $this->Auth->user('id');
 		extract($this->request->data);
 		$u = $this->Model->Users->fetch($id);
+		//stored the oldpw
+		$oldpw = $u->password;
+		
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
 
@@ -75,7 +84,14 @@ class User extends Controller {
 			} else if(isset($reset)) {
 				$u->avatar = '';
 			}
-
+			//1) Check if input password is not hashed ----- AND ----- 
+			//2) check if the input password hash is not equal to the old hash 
+			if ($this->Auth->login($u->username,$u->password) === false && $oldpw !== $bcrypt->hash($u->password,null, 10)) {
+				$u->password = $bcrypt->hash($u->password,null, 10);
+			}else{ // if input password hash === old hash && is valid, do not change the password (set it back to the oldpw hash)
+				$u->password = $oldpw;
+			}
+			
 			$u->save();
 			\StatusMessage::add('Profile updated succesfully','success');
 			return $f3->reroute('/user/profile');

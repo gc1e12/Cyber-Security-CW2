@@ -10,10 +10,23 @@ class User extends AdminController {
 	}
 
 	public function edit($f3) {	
+		$bcrypt = \Bcrypt::instance();	
 		$id = $f3->get('PARAMS.3');
 		$u = $this->Model->Users->fetch($id);
+		//stored the oldpw
+		$oldpw = $u->password;
+
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
+
+			//1) Check if input password is not hashed ----- AND ----- 
+			//2) check if the input password hash is not equal to the old hash 
+			if ($this->Auth->login($u->username,$u->password) === false && $oldpw !== $bcrypt->hash($u->password,null, 10)) {
+				$u->password = $bcrypt->hash($u->password,null, 10);
+			}else{ // if input password hash === old hash && is valid, do not change the password (set it back to the oldpw hash)
+				$u->password = $oldpw;
+			}
+
 			$u->save();
 			\StatusMessage::add('User updated succesfully','success');
 			return $f3->reroute('/admin/user');
