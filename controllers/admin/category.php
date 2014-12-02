@@ -47,7 +47,7 @@
 			$categoryid = $f3->get('PARAMS.3');
 			$category = $this->Model->Categories->fetchById($categoryid);
 			if($this->request->is('post')) {
-				$category->title = htmlspecialchars($this->request->data['title'], ENT_QUOTES, 'UTF-8');
+				$category->title = h($this->request->data['title']);
 			
 				$category->save();
 				\StatusMessage::add('Category updated succesfully','success');
