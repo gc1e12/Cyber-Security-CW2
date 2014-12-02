@@ -18,7 +18,7 @@
 			if($this->request->is('post')) {
 				$category = $this->Model->Categories;
 				$category->title = $this->request->data['title'];
-				$category->title= htmlspecialchars($category->title, ENT_QUOTES, 'UTF-8');
+				$category->title= h($category->title);
 
 				if($category->title !== "")	{
 					$category->save();
