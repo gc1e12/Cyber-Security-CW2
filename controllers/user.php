@@ -43,19 +43,6 @@ class User extends Controller {
 
 	public function login($f3) {
 		if ($this->request->is('post')) {
-			/*list($username,$password) = array($this->request->data['username'],$this->request->data['password']);
-
-			if ($this->Auth->login($username,$password)) {
-				StatusMessage::add('Logged in succesfully','success');
-			
-				if(isset($_GET['from'])) {
-					$f3->reroute($_GET['from']);
-				} else {
-					$f3->reroute('/');	
-				}
-			} else {
-				StatusMessage::add('Invalid username or password','danger');
-			}*/
 
 			list($username,$password, $captcha) = array($this->request->data['username'], $this->request->data['password'], $this->request->data['captcha']);
    			
@@ -103,19 +90,25 @@ class User extends Controller {
 			} else if(isset($reset)) {
 				$u->avatar = '';
 			}
-			//1) Check if the password is changed  ---- AND ---- the old password hash is not equal to the newpassword hash
+
+			if ($this->request->data['password'] !== '') {
+				$u->password = $bcrypt->hash($u->password,null, 10);
+			}
+			/*1) Check if the password is changed  ---- AND ---- the old password hash is not equal to the newpassword hash
 			if ($this->request->data['password'] !== $oldpw && $oldpw !== $bcrypt->hash($this->request->data['password'],null, 10)) {
 				$u->password = $bcrypt->hash($u->password,null, 10);
 				
 			}else{ // if new password hash === old password hash, then do not change the password (set it back to the oldpw hash)
 				$u->password = $oldpw;
-			}
+			}*/
 			
 			$u->save();
 			\StatusMessage::add('Profile updated succesfully','success');
 			return $f3->reroute('/user/profile');
 		}			
 		$_POST = $u->cast();
+		unset($_POST['password']); // clear the password variable.
+
 		$f3->set('u',$u);
 	}
 
