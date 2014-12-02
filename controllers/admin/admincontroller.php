@@ -20,7 +20,7 @@ class AdminController extends \Controller {
 		$access = $this->Auth->user('level');
 
 		//No access if not logged in
-		if(empty($access) || $access !== 2) {
+		if(empty($access) || $access != 2) {
 			\StatusMessage::add('Access Denied','danger');
 			return $f3->reroute('/');
 		}
