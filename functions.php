@@ -43,4 +43,20 @@ function sanitize($string, $force_lowercase = true, $anal = false) {
         $clean;
 }
 
+/* 
+ * Function: bcrypthash
+ * Returns hash (60 character)
+ *  
+ * hash the password together with a randomly generated salt.
+
+ * Parameterss:
+ *      $password -- the password to hash
+ * 
+*/ 
+function bcrypthash ($password){
+    $bcrypt = \Bcrypt::instance();
+    $pwsalt = sha1($password);
+    return $bcrypt ->hash($password,$pwsalt, 13); 
+}
+
 ?>

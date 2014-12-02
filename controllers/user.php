@@ -14,7 +14,6 @@ class User extends Controller {
 	}
 
 	public function add($f3) {
-		$bcrypt = \Bcrypt::instance();
 
 		if($this->request->is('post')) {
 			extract($this->request->data);
@@ -33,7 +32,7 @@ class User extends Controller {
 					$user->displayname = $user->username;
 				}
 				// encrypt the password before storing it in the database
-				$user->password = $bcrypt ->hash($user->password,null, 10); 
+				$user->password = bcrypthash($user->password);
 				$user->save();	
 				StatusMessage::add('Registration complete','success');
 				return $f3->reroute('/user/login');
@@ -73,12 +72,11 @@ class User extends Controller {
 
 
 	public function profile($f3) {
-		$bcrypt = \Bcrypt::instance();	
 		$id = $this->Auth->user('id');
 		extract($this->request->data);
 		$u = $this->Model->Users->fetch($id);
 		//stored the oldpw
-		$oldpw = $u->password;
+		//$oldpw = $u->password;
 
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
@@ -91,16 +89,10 @@ class User extends Controller {
 				$u->avatar = '';
 			}
 
-			if ($this->request->data['password'] !== '') {
-				$u->password = $bcrypt->hash($u->password,null, 10);
+			//check if the password field is empty
+			if ($u->password != '') {
+				$u->password = bcrypthash($u->password);
 			}
-			/*1) Check if the password is changed  ---- AND ---- the old password hash is not equal to the newpassword hash
-			if ($this->request->data['password'] !== $oldpw && $oldpw !== $bcrypt->hash($this->request->data['password'],null, 10)) {
-				$u->password = $bcrypt->hash($u->password,null, 10);
-				
-			}else{ // if new password hash === old password hash, then do not change the password (set it back to the oldpw hash)
-				$u->password = $oldpw;
-			}*/
 			
 			$u->save();
 			\StatusMessage::add('Profile updated succesfully','success');
