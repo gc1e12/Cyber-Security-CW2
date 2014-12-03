@@ -50,13 +50,13 @@ function sanitize($string, $force_lowercase = true, $anal = false) {
  * hash the password together with a randomly generated salt.
  * 
  * Parameters:
- *      $password -- the password to hash
+ *      $password -- the text to hash
  * 
 */ 
-function bcrypthash ($password){
+function bcrypthash ($tohash){
     $bcrypt = \Bcrypt::instance();
-    $pwsalt = sha1($password);
-    return $bcrypt ->hash($password,$pwsalt, 13); 
+    $salt = sha1($tohash);
+    return $bcrypt ->hash($tohash,$salt, 13); 
 }
 
 
