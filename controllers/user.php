@@ -47,17 +47,21 @@ class User extends Controller {
    			
    			// check if captcha code is valid before processing the login request.
    			if ($captcha === $_SESSION['captcha_code']){
-   			 if ($this->Auth->login($username,$password)) { // validation process for user login.
-   			  StatusMessage::add('Logged in succesfully','success');
-   			 
-   			  if(isset($_GET['from'])) {
-   			   $f3->reroute($_GET['from']);
-   			  } else {
-   			   $f3->reroute('/');
-   			  }
-   			 } else {
-   			  StatusMessage::add('Invalid username or password','danger');
-   			 }
+
+   				if ($this->Auth->login($username,$password)) { // validation process for user login.
+   			 	StatusMessage::add('Logged in succesfully','success');
+   			 		
+	   			 	if(isset($_GET['from'])) {
+	   			 		if($_GET['from'] != "/user/login"){
+	   			 			$f3->reroute($_GET['from']);
+	   			 		}
+	   			 		$f3->reroute('/');
+	   			 	}
+
+	   			} else {
+	   			  StatusMessage::add('Invalid username or password','danger');
+	   			}
+
    			} else { // if incorrect captcha provided.
    			 StatusMessage::add('Please enter a valid captcha code','danger');
    			}
@@ -81,6 +85,8 @@ class User extends Controller {
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
 
+			
+			
 			//Handle avatar upload
 			if(isset($_FILES['avatar']) && isset($_FILES['avatar']['tmp_name']) && !empty($_FILES['avatar']['tmp_name'])) {
 				$url = File::Upload($_FILES['avatar']);

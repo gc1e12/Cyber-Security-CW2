@@ -16,5 +16,5 @@ class File {
 	}
 
 }
-
+//chmod --> change file permission. change so everyone can read the file.
 ?>
