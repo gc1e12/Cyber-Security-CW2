@@ -32,7 +32,7 @@
 
 			if (!empty($results)) { // check if the array is empty
 				//check if the hashpassword is identical with the stored password. (string pw, hash pw)
-				if($crypt->verify ($f3->get('pass'), $results['password'])===true) {
+				if($crypt->verify ($password, $results['password'])===true) {
 					$user = $results;	
 					$this->setupSession($user);
 					return $this->forceLogin($user);
