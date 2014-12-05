@@ -13,13 +13,16 @@ class User extends AdminController {
 		$id = $f3->get('PARAMS.3');
 		$u = $this->Model->Users->fetch($id);
 		//stored the oldpw
-		$oldpw = $u->password;
+		$pwhash = $u->password; //store the current password
 
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
 
-			if ($u->password != '') {
+			//check if the password field is empty
+			if (strlen($_POST['password']) !== 0) {
 				$u->password = bcrypthash($u->password);
+			}else{
+				$u->password = $pwhash;
 			}
 
 			$u->save();
