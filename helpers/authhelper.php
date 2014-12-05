@@ -28,9 +28,9 @@
 			$db = $this->controller->db;
 			
 			$results = $this->controller->Model->users->fetch(array('username' => $username)); // use the find function to retrive a single SQL mapped object.
-			$results = $results->cast(); // convert the obejct into an array.
 
-			if (!empty($results)) { // check if the array is empty
+			if ($results) { // check if the object not empty
+				$results = $results->cast(); // convert the obejct into an array.
 				//check if the hashpassword is identical with the stored password. (string pw, hash pw)
 				if($crypt->verify ($password, $results['password'])===true) {
 					$user = $results;	
