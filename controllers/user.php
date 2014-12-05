@@ -16,27 +16,47 @@ class User extends Controller {
 	public function add($f3) {
 
 		if($this->request->is('post')) {
+
 			extract($this->request->data);
-			$check = $this->Model->Users->fetch(array('username' => $username));
-			if (!empty($check)) {
-				StatusMessage::add('User already exists','danger');
-			} else if($password != $password2) {
-				StatusMessage::add('Passwords must match','danger');
-			} else {
-				$user = $this->Model->Users;
-				$user->copyfrom('POST');
-				$user->created = mydate();
-				$user->bio = '';
-				$user->level = 1;
-				if(empty($displayname)) {
-					$user->displayname = $user->username;
+
+			$validation = true; // status of the validation.
+
+			if ($captcha === $_SESSION['captcha_code']){
+				//check if username is empty
+				if (strlen($username)!== 0 && strlen($displayname)!== 0 && strlen($password) !== 0 && strlen($password2) !== 0 && strlen($password) !== 0){
+
+					//check if username existed
+					$check = $this->Model->Users->fetch(array('username' => $username));
+					if (!empty($check)) { //print error message if user existed
+						StatusMessage::add('User already exists','danger');
+						$validation = false;
+					} else if($password != $password2 || strlen($password)<10) { //print error message if passwords do not matched or $password is too short.
+						StatusMessage::add('Passwords must match AND must be at least 10 character long','danger');
+						$validation = false;
+					} else if($validation === true){ // process the form if all field requirement are fulfill
+						$user = $this->Model->Users;
+						$user->copyfrom('POST');
+						$user->created = mydate();
+						$user->bio = '';
+						$user->level = 1;
+						if(empty($displayname)) {
+							$user->displayname = $user->username;
+						}
+						// encrypt the password before storing it in the database
+						$user->password = bcrypthash($user->password);
+						$user->save();	
+						StatusMessage::add('Registration complete','success');
+						return $f3->reroute('/user/login');
+					}
+
+				}else{
+					StatusMessage::add('All field is mandatory.','danger');
 				}
-				// encrypt the password before storing it in the database
-				$user->password = bcrypthash($user->password);
-				$user->save();	
-				StatusMessage::add('Registration complete','success');
-				return $f3->reroute('/user/login');
+			}else{ // if incorrect captcha provided.
+   				StatusMessage::add('Please enter a valid captcha code','danger');
 			}
+
+			
 		}
 	}
 
@@ -49,7 +69,7 @@ class User extends Controller {
    			if ($captcha === $_SESSION['captcha_code']){
 
    				if ($this->Auth->login($username,$password)) { // validation process for user login.
-   			 	StatusMessage::add('Logged in succesfully','success');
+   			 		StatusMessage::add('Logged in succesfully','success');
    			 		
 	   			 	if(isset($_GET['from'])) {
 	   			 		if($_GET['from'] != "/user/login"){

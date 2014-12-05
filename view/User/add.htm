@@ -13,6 +13,17 @@
 	echo $form->add('password',array('type' => 'password','value' => ''));
 	echo $form->add('password2',array('type' => 'password','value' => '', 'label' => 'Confirm Password'));
 	echo '<hr/>';
+
+	 //create a new captcha image
+	 $img = new Image();
+	 $img->captcha('arial.ttf',16,7,'SESSION.captcha_code'); // arial.ttf stored in the view
+	 
+	 echo $form->add('captcha');
+ ?>
+
+<img src="data:image/png;base64,<?= base64_encode($img->dump()); ?>" /> <br/><br/>
+
+<?
 	echo $form->add('Register',array('type' => 'submit'));
 	echo $form->end();
 ?>
