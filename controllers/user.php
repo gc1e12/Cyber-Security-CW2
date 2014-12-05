@@ -98,15 +98,14 @@ class User extends Controller {
 			if(isset($_FILES['avatar']) && isset($_FILES['avatar']['tmp_name']) && !empty($_FILES['avatar']['tmp_name']) && $_FILES['avatar']['error'] == false) {
 
 				$filename = basename($_FILES['avatar']['name']);
-				var_dump($filename);
-				$getLastFileExtension = strtolower((new SplFileInfo($filename))->getExtension());
-				var_dump($getLastFileExtension);
-				var_dump($_FILES);
+				$getLastFileExtension = (new SplFileInfo($filename))->getExtension();
+				
 				//check if it is a valid extension
-				if(array_key_exists($getLastFileExtension, $whiteList) === true && ($_FILES['avatar']['type'])=== $whiteList[$getLastFileExtension]){ 
+				if(array_key_exists($getLastFileExtension, $whiteList) === true && ($_FILES['avatar']['tmp_name'])=== $whiteList[$getLastFileExtension]){ 
 					$url = File::Upload($_FILES['avatar']);
 					$u->avatar = $url;
 				}else{
+					$u->avatar = '';
 					\StatusMessage::add('Invalid file extension','danger');
 				}
 
@@ -123,7 +122,7 @@ class User extends Controller {
 			
 			$u->save();
 			\StatusMessage::add('Profile updated succesfully','success');
-			//return $f3->reroute('/user/profile');
+			return $f3->reroute('/user/profile');
 		}			
 		$_POST = $u->cast();
 		unset($_POST['password']); // do not display the password variable
