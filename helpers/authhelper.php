@@ -26,20 +26,14 @@
 			$f3=Base::instance();
 			$crypt = \Bcrypt::instance();						
 			$db = $this->controller->db;
-		
-			$f3->set('user', $username);
-			$f3->set('pass', $password);
-			/*$results = $db->connection->exec("SELECT * FROM `users` WHERE `username`= :user AND `password`= :pass",
-												array(':user'=>$f3->get('user'),':pass'=>$f3->get('pass'))
-											);*/
-			$results = $db->connection->exec("SELECT * FROM `users` WHERE `username`= :user",
-												array(':user'=>$f3->get('user'))
-											);
+			
+			$results = $this->controller->Model->users->fetch(array('username' => $username)); // use the find function to retrive a single SQL mapped object.
+			$results = $results->cast(); // convert the obejct into an array.
 
-			if (!empty($results)) {
+			if (!empty($results)) { // check if the array is empty
 				//check if the hashpassword is identical with the stored password. (string pw, hash pw)
-				if($crypt->verify ($f3->get('pass'), $results[0]['password'])===true) {
-					$user = $results[0];	
+				if($crypt->verify ($f3->get('pass'), $results['password'])===true) {
+					$user = $results;	
 					$this->setupSession($user);
 					return $this->forceLogin($user);
 				}				

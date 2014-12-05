@@ -79,25 +79,45 @@ class User extends Controller {
 		$id = $this->Auth->user('id');
 		extract($this->request->data);
 		$u = $this->Model->Users->fetch($id);
-		//stored the oldpw
-		//$oldpw = $u->password;
+
+		$pwhash = $u->password; //store the current password
 
 		if($this->request->is('post')) {
 			$u->copyfrom('POST');
 
-			
+			// accepted upload extension.
+			$whiteList = array(
+				'gif' => 'image/gif',
+				'png' => 'image/png',
+				'jpeg' =>'image/jpeg',
+				'jpg' => 'image/jpeg',
+				'bmp' => 'image/bmp'
+			);
 			
 			//Handle avatar upload
-			if(isset($_FILES['avatar']) && isset($_FILES['avatar']['tmp_name']) && !empty($_FILES['avatar']['tmp_name'])) {
-				$url = File::Upload($_FILES['avatar']);
-				$u->avatar = $url;
+			if(isset($_FILES['avatar']) && isset($_FILES['avatar']['tmp_name']) && !empty($_FILES['avatar']['tmp_name']) && $_FILES['avatar']['error'] == false) {
+
+				$filename = basename($_FILES['avatar']['name']);
+				$getLastFileExtension = (new SplFileInfo($filename))->getExtension();
+				
+				//check if it is a valid extension
+				if(array_key_exists($getLastFileExtension, $whiteList) === true && ($_FILES['avatar']['tmp_name'])=== $whiteList[$getLastFileExtension]){ 
+					$url = File::Upload($_FILES['avatar']);
+					$u->avatar = $url;
+				}else{
+					$u->avatar = '';
+					\StatusMessage::add('Invalid file extension','danger');
+				}
+
 			} else if(isset($reset)) {
 				$u->avatar = '';
 			}
-
+			
 			//check if the password field is empty
-			if ($u->password != '') {
+			if (strlen($_POST['password']) !== 0) {
 				$u->password = bcrypthash($u->password);
+			}else{
+				$u->password = $pwhash;
 			}
 			
 			$u->save();
@@ -105,7 +125,7 @@ class User extends Controller {
 			return $f3->reroute('/user/profile');
 		}			
 		$_POST = $u->cast();
-		unset($_POST['password']); // clear the password variable.
+		unset($_POST['password']); // do not display the password variable
 
 		$f3->set('u',$u);
 	}
