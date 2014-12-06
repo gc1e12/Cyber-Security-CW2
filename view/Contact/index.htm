@@ -19,6 +19,17 @@
 	echo $form->add('to',array('type' => 'hidden', 'value' => $to));
 	echo $form->add('subject',array('type' => 'text'));
 	echo $form->add('message',array('type' => 'textarea'));
+
+	//create a new captcha image
+	$img = new Image();
+	$img->captcha('arial.ttf',16,7,'SESSION.captcha_code'); // arial.ttf stored in the view
+	 
+	echo $form->add('captcha');
+ ?>
+
+<img src="data:image/png;base64,<?= base64_encode($img->dump()); ?>" /> <br/><br/>
+
+ <?
 	echo $form->add('Send',array('type' => 'submit'));
 
 	echo $form->end();
