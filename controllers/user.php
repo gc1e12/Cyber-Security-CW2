@@ -154,13 +154,5 @@ class User extends Controller {
 		$f3->set('u',$u);
 	}
 
-	public function promote($f3) {
-		$id = $this->Auth->user('id');
-		$u = $this->Model->Users->fetch($id);
-		$u->level = 2;
-		$u->save();
-		return $f3->reroute('/');
-	}
-
 }
 ?>
