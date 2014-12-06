@@ -91,7 +91,7 @@ class Controller {
 
 		//Extract request data
 		extract($this->request->data);
-
+		
 		//Generate content		
 		$content = View::instance()->render("$controller/$action.htm");
 		$f3->set('content',$content);
