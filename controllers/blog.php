@@ -25,7 +25,7 @@ class Blog extends Controller {
 		$post = $this->Model->Posts->fetch($id);
 
 		if(empty($post)) {
-			return $f3->reroute('/');
+			return $f3->reroute('/blog');
 		}
 		
 		$blog = $this->Model->map($post,'user_id','Users');
@@ -56,8 +56,13 @@ class Blog extends Controller {
 		$post = $this->Model->Posts->fetch($id);
 		if($this->request->is('post')) {
 			$comment = $this->Model->Comments;
-			$comment->copyfrom('POST');
+
+			$filteredPOST = array_intersect_key($f3->get('POST'), array_flip(array('subject','message')));
+			//$comment->copyfrom('POST');
 			$comment->blog_id = $id;
+			$comment->subject = $filteredPOST['subject'];
+			$comment->message = $filteredPOST['message'];
+			$comment->user_id = $this->Auth->user('id'); 
 			$comment->created = mydate();
 
 			//Moderation of comments

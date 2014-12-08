@@ -63,7 +63,7 @@
 <? else: ?>
 <? $form = new Form(); 
 echo $form->start(array('action' => $site['base'] . '/blog/comment/' . $post->id));
-echo $form->add('user_id',array('type' => 'hidden', 'value' => $user['id']));
+//echo $form->add('user_id',array('type' => 'hidden', 'value' => $user['id']));
 echo $form->add('subject',array('type' => 'text', 'placeholder' => 'Enter Subject'));
 echo $form->add('message',array('type' => 'wysiwyg','label' => 'Your message'));
 echo $form->add('Submit',array('type' => 'submit'));
