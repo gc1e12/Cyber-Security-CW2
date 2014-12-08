@@ -45,6 +45,25 @@ class Controller {
 		if(isset($beforeCode)) {
 			$f3->process($beforeCode);
 		}
+
+	// Handle form posting ----------------------------------------------
+
+		//check if it is a post
+		if ($this->request->is('post')){
+
+			//compared the csrfToken
+			if (isset($this->request->data['csrfToken']) && $_SESSION['csrfToken'] === $this->request->data['csrfToken']){
+				//destroy the csrfToken
+				unset($_SESSION['csrfToken']);
+			}else{ // csrfToken does not match ***CSRF detected*****
+				//destroy the csrfToken
+				unset($_SESSION['csrfToken']);
+				 \StatusMessage::add("(CSRF Detected) : The form you are entering is being tampered with. ", 'danger');
+				 $f3->reroute('/');
+			}
+		}
+
+	// ------------------------------------------------------------------
 	}
 
 	public function afterRoute($f3) {	

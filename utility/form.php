@@ -8,7 +8,11 @@ class Form {
 	public function start($options=array()) {
 		$action = isset($options['action']) ? $options['action'] : '';
 		$enctype = (isset($options['type']) && $options['type'] == 'file') ? 'enctype="multipart/form-data"' : ''; //Handle file uploads
-		return '<form role="form" method="post" action="'.$action.'" '.$enctype.'>';	
+		$csrfToken = uniqid(rand(), true); // create a random form token.
+		$_SESSION['csrfToken'] = $csrfToken; // store the token in the session for verification purposes.
+
+		return '<form role="form" method="post" action="'.$action.'" '.$enctype.'>
+				 <input type="hidden" name="csrfToken" value="'.$csrfToken.'">';	
 	}
 
 	public function file($options) {
