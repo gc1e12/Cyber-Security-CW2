@@ -37,13 +37,9 @@ class Controller {
 		//Extract request data
 		extract($this->request->data);
 
-		$params = $f3->get('PARAMS');
-		if(!empty($params)){
-			foreach($params as $key => $value){
-				$params[$key] = $f3->clean($value);
-			}
-			$f3->set('PARAMS', $params);
-		}
+		$params = $f3->clean($f3->get('PARAMS')); //clean the url parameters
+		
+		$f3->set('PARAMS', $params); 
 		
 		//Process before route code
 		if(isset($beforeCode)) {

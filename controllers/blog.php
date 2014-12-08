@@ -19,10 +19,11 @@ class Blog extends Controller {
 
 	public function view($f3) {
 		$id = $f3->get('PARAMS.3');
-		if(empty($id)) {
+		if(empty($id) || !is_numeric($id)) {
 			return $f3->reroute('/');
 		}
 		$post = $this->Model->Posts->fetch($id);
+
 		if(empty($post)) {
 			return $f3->reroute('/');
 		}
