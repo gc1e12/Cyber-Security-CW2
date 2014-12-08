@@ -11,10 +11,9 @@ class Page extends AdminController {
 
 	public function add($f3) {
 		if($this->request->is('post')) {
-			//$pagename = strtolower(str_replace(" ","_",$this->request->data['title']));
+
 			$pagename = strtolower($this->request->data['title']);
 			$pagename = sanitize($pagename);
-			//$pagename= trim($f3->clean(strip_tags($pagename)));
 
 			if($pagename !== ""){
 				$this->Model->Pages->create($pagename);

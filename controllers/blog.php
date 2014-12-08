@@ -57,12 +57,13 @@ class Blog extends Controller {
 		if($this->request->is('post')) {
 			$comment = $this->Model->Comments;
 
+			
 			$filteredPOST = array_intersect_key($f3->get('POST'), array_flip(array('subject','message')));
 			//$comment->copyfrom('POST');
 			$comment->blog_id = $id;
 			$comment->subject = $filteredPOST['subject'];
 			$comment->message = $filteredPOST['message'];
-			$comment->user_id = $this->Auth->user('id'); 
+			$comment->user_id = $this->Auth->user('id'); // get the user id
 			$comment->created = mydate();
 
 			//Moderation of comments
