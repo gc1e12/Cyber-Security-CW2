@@ -35,7 +35,7 @@
 	}
 ?>
 <div class="comment <?=$class?>">
-<?php $avatar = empty($u->avatar) ? '/img/avatar.png' : $comment['Users']->avatar; ?>
+<?php $avatar = empty($comment['Users']->avatar) ? '/img/avatar.png' : $comment['Users']->avatar; ?>
 <h4><?=$comment['Comments']->subject?> <span style="float: right">
 <a href="<?=$site['base']?>/user/view/<?=$comment['Users']->id?>"><?=$comment['Users']->displayname?></a>
 <br/><img src="<?=$site['base']?><?=$avatar?>" class="avatar"/></span></h4>

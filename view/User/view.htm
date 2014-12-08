@@ -1,4 +1,4 @@
-<?php $avatar = empty($u->avatar) ? '/img/avatar.png' : $comment['Users']->avatar; ?>
+<?php $avatar = empty($u->avatar) ? '/img/avatar.png' : $u->avatar; ?>
 
 <img style="float: right" src="<?=$site['base']?><?=$avatar?>" class="avatar"/>
 <h2><?=$u->displayname?> (<?=$u->username?>)</h2>
