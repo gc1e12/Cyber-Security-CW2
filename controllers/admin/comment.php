@@ -21,15 +21,26 @@ class Comment extends AdminController {
 
 	public function edit($f3) {
 		$id = $f3->get('PARAMS.3');
-		$comment = $this->Model->Comments->fetch($id);
-		if($this->request->is('post')) {
-			$comment->copyfrom('POST');
-			$comment->save();
-			\StatusMessage::add('Comment updated succesfully','success');
+		$comment = $this->Model->Comments->fetchById($id);
+
+		if($comment){ // $comment will return true if the id is valid.
+			if($this->request->is('post')) {
+				$comment->copyfrom('POST');
+				
+				//$_POST['subject'] = $f3->scrub($_POST['subject']);
+				$comment->subject = h($comment->subject);
+				//$comment->message = h($comment->message);
+
+				$comment->save();
+				\StatusMessage::add('Comment updated succesfully','success');
+				//return $f3->reroute('/admin/comment');
+			} 
+			$_POST = $comment;
+			$f3->set('comment',$comment);
+		}else{
 			return $f3->reroute('/admin/comment');
-		} 
-		$_POST = $comment;
-		$f3->set('comment',$comment);
+		}
+		
 	}
 
 }
