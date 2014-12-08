@@ -122,10 +122,10 @@ class User extends Controller {
 			if(isset($_FILES['avatar']) && isset($_FILES['avatar']['tmp_name']) && !empty($_FILES['avatar']['tmp_name']) && $_FILES['avatar']['error'] == false) {
 
 				$filename = basename($_FILES['avatar']['name']);
-				$getLastFileExtension = (new SplFileInfo($filename))->getExtension();
+				$getLastFileExtension = strtolower((new SplFileInfo($filename))->getExtension());
 				
 				//check if it is a valid extension
-				if(array_key_exists($getLastFileExtension, $whiteList) === true && ($_FILES['avatar']['tmp_name'])=== $whiteList[$getLastFileExtension]){ 
+				if(array_key_exists($getLastFileExtension, $whiteList) === true && ($_FILES['avatar']['type'])=== $whiteList[$getLastFileExtension]){ 
 					$url = File::Upload($_FILES['avatar']);
 					$u->avatar = $url;
 				}else{
