@@ -50,6 +50,8 @@ class User extends Controller {
 						$user->password = bcrypthash($user->password);
 						$user->save();	
 						StatusMessage::add('Registration complete','success');
+
+						unset($_SESSION['captcha_code']); //destroy the session variable
 						return $f3->reroute('/user/login');
 					}
 
@@ -59,7 +61,7 @@ class User extends Controller {
 			}else{ // if incorrect captcha provided.
    				StatusMessage::add('Please enter a valid captcha code','danger');
 			}
-
+			unset($_SESSION['captcha_code']); //destroy the session variable
 			
 		}
 	}
@@ -80,6 +82,7 @@ class User extends Controller {
 
 	   			 			$f3->reroute($_GET['from']);
 	   			 		}
+	   			 		unset($_SESSION['captcha_code']);
 	   			 		$f3->reroute('/');
 	   			 	}
 
@@ -90,6 +93,7 @@ class User extends Controller {
    			} else { // if incorrect captcha provided.
    			 StatusMessage::add('Please enter a valid captcha code','danger');
    			}
+   			unset($_SESSION['captcha_code']);
 		}		
 	}
 
