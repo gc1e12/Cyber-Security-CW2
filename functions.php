@@ -59,6 +59,14 @@ function bcrypthash ($tohash){
     return $bcrypt ->hash($tohash,$salt, 13); 
 }
 
+/* 
+ * check if a string is an URL
+ */
+function isURL ($url){
+    $audit = \Audit::instance();
+    return $audit->url($url);
+    
+}
 
 
 ?>
