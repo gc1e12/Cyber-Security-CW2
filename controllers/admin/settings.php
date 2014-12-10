@@ -9,7 +9,7 @@
 			if($this->request->is('post')) {
 				foreach($settings as $setting) {
 					if(isset($this->request->data[$setting->key])) {
-						$setting->value = $f3->clean($this->request->data[$setting->key]);
+						$setting->value = $this->request->data[$setting->key];
 						$setting->save();
 					} else {
 						$setting->value = 0;

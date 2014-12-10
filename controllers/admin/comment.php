@@ -26,14 +26,12 @@ class Comment extends AdminController {
 		if($comment){ // $comment will return true if the id is valid.
 			if($this->request->is('post')) {
 				$comment->copyfrom('POST');
-				
-				//$_POST['subject'] = $f3->scrub($_POST['subject']);
-				$comment->subject = h($comment->subject);
-				//$comment->message = h($comment->message);
+			
+				$comment->subject = $this->request->data['subject'];
 
 				$comment->save();
 				\StatusMessage::add('Comment updated succesfully','success');
-				//return $f3->reroute('/admin/comment');
+				return $f3->reroute('/admin/comment');
 			} 
 			$_POST = $comment;
 			$f3->set('comment',$comment);

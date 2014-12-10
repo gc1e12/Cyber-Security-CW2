@@ -18,7 +18,6 @@
 			if($this->request->is('post')) {
 				$category = $this->Model->Categories;
 				$category->title = $this->request->data['title'];
-				$category->title= h($category->title);
 
 				if($category->title !== "")	{
 					$category->save();
@@ -47,7 +46,7 @@
 			$categoryid = $f3->get('PARAMS.3');
 			$category = $this->Model->Categories->fetchById($categoryid);
 			if($this->request->is('post')) {
-				$category->title = h($this->request->data['title']);
+				$category->title = $this->request->data['title'];
 			
 				$category->save();
 				\StatusMessage::add('Category updated succesfully','success');

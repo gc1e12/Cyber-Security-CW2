@@ -60,6 +60,11 @@
 			//Setup new session
 			session_id(md5($user['id']));
 
+			//store the session in the database
+			//$db = $this->controller->db;
+			//$this->$db->exec('UPDATE users SET `session` = :session WHERE `id` = :id', 
+			//						array('session' => 'test', 'id' => $user['id']));
+
 			//Setup cookie for storing user details and for relogging in
 			setcookie('RobPress_User',base64_encode(serialize($user)),time()+3600*24*30,'/');
 

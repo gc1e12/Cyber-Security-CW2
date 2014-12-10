@@ -75,9 +75,9 @@ class Blog extends Controller {
 
 			//Default subject
 			if(empty($this->request->data['subject'])) {
-				$comment->subject = 'RE: ' . $f3->clean($post->title);
+				$comment->subject = 'RE: ' . $this->request->data['title'];
 			}else {
-				$comment->subject = $f3->clean($this->request->data['subject']);
+				$comment->subject = $this->request->data['subject'];
 			}
 
 			$comment->save();
@@ -111,31 +111,35 @@ class Blog extends Controller {
 	}
 
 	public function search($f3) {
+
 		if($this->request->is('post')) {
 			extract($this->request->data);
-			
+
 			$search = h($search); // call the function in the function.php.
 			$f3->set('search',$search);
 
-			//Get search results
-			$search = str_replace("*","%",$search); //Allow * as wildcard
-			/*$ids = $this->db->connection->exec("SELECT id FROM `posts` WHERE `title` LIKE \"%:search%\" OR `content` LIKE '%:search%'", 
-				array(':search'=>$f3->get('search'))
-				);*/
-			$ids = $this->db->connection->exec("SELECT id FROM `posts` WHERE `title` LIKE \"%$search%\" OR `content` LIKE '%$search%'");
-			$ids = Hash::extract($ids,'{n}.id');
-			if(empty($ids)) {
-				StatusMessage::add('No search results found for ' . $search); 
-				return $f3->reroute('/blog/search');
+			if (strlen(trim($search)) === 0){
+				StatusMessage::add('Please input something to search.'); 
+				
+			}else{
+				//Get search results
+				$search = str_replace("*","%",$search); //Allow * as wildcard
+				$ids = $this->db->connection->exec("SELECT id FROM `posts` WHERE `title` LIKE \"%$search%\" OR `content` LIKE '%$search%'");
+				$ids = Hash::extract($ids,'{n}.id');
+				if(empty($ids)) {
+					StatusMessage::add('No search results found for ' . $f3->get('search')); 
+					return $f3->reroute('/blog/search');
+				}
+
+				//Load associated data
+				$posts = $this->Model->Posts->fetchAll(array('id' => $ids));
+				$blogs = $this->Model->map($posts,'user_id','Users');
+				$blogs = $this->Model->map($posts,array('post_id','Post_Categories','category_id'),'Categories',false,$blogs);
+
+				$f3->set('blogs',$blogs);
+				$this->action = 'results';	
 			}
 
-			//Load associated data
-			$posts = $this->Model->Posts->fetchAll(array('id' => $ids));
-			$blogs = $this->Model->map($posts,'user_id','Users');
-			$blogs = $this->Model->map($posts,array('post_id','Post_Categories','category_id'),'Categories',false,$blogs);
-
-			$f3->set('blogs',$blogs);
-			$this->action = 'results';	
 		}
 	}
 }

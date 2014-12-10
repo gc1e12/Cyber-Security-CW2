@@ -149,7 +149,8 @@ class User extends Controller {
 				$u->password = $pwhash;
 			}
 
-			$u->displayname = $f3->clean($u->displayname);
+			//$u->displayname = $f3->clean($u->displayname);
+			$u->displayname = $this->request->data['displayname'];
 			
 			$u->save();
 			\StatusMessage::add('Profile updated succesfully','success');
