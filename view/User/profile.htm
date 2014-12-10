@@ -10,7 +10,7 @@
 	$form = new Form();
 	echo $form->start(array('type' => 'file'));
 	echo $form->add('displayname',array('label' => 'Display Name'));
-	echo $form->add('password',array('type' => 'password'));
+	echo $form->add('password',array('type' => 'password','label' => 'Change Password','value' => ''));
 	echo $form->add('bio',array('type' => 'wysiwyg'));
 	echo $form->add('avatar',array('type' => 'file'));
 	if(!empty($u->avatar)) {
