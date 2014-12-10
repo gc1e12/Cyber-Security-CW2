@@ -11,7 +11,14 @@ class User extends AdminController {
 
 	public function edit($f3) {	
 		$id = $f3->get('PARAMS.3');
-		$u = $this->Model->Users->fetch($id);
+		$u = $this->Model->Users->fetchById($id);
+
+		//check if it is a valid user and id is numeric
+		//if not valid users or params is not numeric redirect back to /admin/user page.
+		if(!is_numeric($id) || !$u){
+			return $f3->reroute('/admin/user');
+		}
+
 		//stored the oldpw
 		$pwhash = $u->password; //store the current password
 
