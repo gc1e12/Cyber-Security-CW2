@@ -54,7 +54,7 @@ class Controller {
 			//compared the csrfToken
 			if (isset($this->request->data['csrfToken']) && $_SESSION['csrfToken'] === $this->request->data['csrfToken']){
 				//clean the data
-				$this->request->data = $f3->clean($this->request->data);
+				$this->request->data = $f3->clean($this->request->data,'body,strong,em,a,ol,li,div,p');
 				//destroy the csrfToken
 				//$_SESSION['csrfToken'] = null;
 			}else{ // csrfToken does not match ***CSRF detected*****
