@@ -38,19 +38,6 @@ class Blog extends Controller {
 		$f3->set('blog',$blog);		
 	}
 
-	public function reset($f3) {
-		$allposts = $this->Model->Posts->fetchAll();
-		$allcategories = $this->Model->Categories->fetchAll();
-		$allcomments = $this->Model->Comments->fetchAll();
-		$allmaps = $this->Model->Post_Categories->fetchAll();
-		foreach($allposts as $post) $post->erase();
-		foreach($allcategories as $cat) $cat->erase();
-		foreach($allcomments as $com) $com->erase();
-		foreach($allmaps as $map) $map->erase();
-		StatusMessage::add('Blog has been reset');
-		return $f3->reroute('/');
-	}
-
 	public function comment($f3) {
 		$id = $f3->get('PARAMS.3');
 		$post = $this->Model->Posts->fetch($id);
@@ -115,7 +102,7 @@ class Blog extends Controller {
 		if($this->request->is('post')) {
 			extract($this->request->data);
 
-			$search = h($search); // call the function in the function.php.
+			//$search = h($search); // call the function in the function.php.
 			$f3->set('search',$search);
 
 			if (strlen(trim($search)) === 0){
@@ -124,17 +111,22 @@ class Blog extends Controller {
 			}else{
 				//Get search results
 				$search = str_replace("*","%",$search); //Allow * as wildcard
-				$ids = $this->db->connection->exec("SELECT id FROM `posts` WHERE `title` LIKE \"%$search%\" OR `content` LIKE '%$search%'");
-				$ids = Hash::extract($ids,'{n}.id');
-				if(empty($ids)) {
+				//prepare the params 
+				$tosearch = '%'.$search.'%';
+				//$ids = $this->db->connection->exec("SELECT id FROM `posts` WHERE `title` LIKE \"%$search%\" OR `content` LIKE '%$search%'");
+				//$ids = Hash::extract($ids,'{n}.id');
+
+				//use the find function in database to search for the result.
+				$searchResult = $this->Model->Posts->find(array('title LIKE ? OR content LIKE ?',$tosearch,$tosearch));
+				if(empty($searchResult)) {
 					StatusMessage::add('No search results found for ' . $f3->get('search')); 
 					return $f3->reroute('/blog/search');
 				}
 
 				//Load associated data
-				$posts = $this->Model->Posts->fetchAll(array('id' => $ids));
-				$blogs = $this->Model->map($posts,'user_id','Users');
-				$blogs = $this->Model->map($posts,array('post_id','Post_Categories','category_id'),'Categories',false,$blogs);
+				//$posts = $this->Model->Posts->fetchAll(array('id' => $ids));
+				$blogs = $this->Model->map($searchResult,'user_id','Users');
+				$blogs = $this->Model->map($searchResult,array('post_id','Post_Categories','category_id'),'Categories',false,$blogs);
 
 				$f3->set('blogs',$blogs);
 				$this->action = 'results';	
