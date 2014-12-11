@@ -20,6 +20,12 @@
 			$cats = $this->Model->Post_Categories->fetchAll(array('post_id' => $postid));
 			foreach($cats as $cat) {
 				$cat->erase();
+			}
+
+			//Remove the existing comment about the post that is to be deleted
+			$postComments = $this->Model->comments->fetchAll(array('blog_id' => $postid));
+			foreach($postComments as $com) {
+				$com->erase();
 			}	
 
 			\StatusMessage::add('Post deleted succesfully','success');
@@ -79,7 +85,7 @@
 				$post->copyfrom('POST');
 
 				$post->title = $this->request->data['title'];
-				$post->content = $this->request->data['title'];
+				$post->content = $this->request->data['content'];
 				$post->summary = $this->request->data['summary'];
 				$post->user_id = $post->user_id;	
 				$post->created = $post->created;
