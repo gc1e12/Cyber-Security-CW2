@@ -11,13 +11,33 @@
 		public function resume() {
 			$f3=Base::instance();				
 
-			//Ignore if already running session	
-			if($f3->exists('SESSION.user.id')) return;
+			//verify the session
+			if($f3->exists('SESSION.id')) {
+				$sessionId = $f3->get('SESSION.id');
+				$user = $this->controller->db->query("SELECT * FROM users WHERE session = '$sessionId'"); // retrieve the user row from the database with the uniqid()
+
+				if (empty($user)){ // invalid
+					$this->logout();
+					//$f3->clear('SESSION'); // destroy the session
+					$f3->reroute('/'); // if it is empty then, reroute to hompage.
+
+				}else{ //ignore if it is a valid 
+					return; //ignore
+				}
+				
+			} 
 
 			//Log user back in from cookie
 			if($f3->exists('COOKIE.RobPress_User')) {
-				$user = unserialize(base64_decode($f3->get('COOKIE.RobPress_User')));
-				$this->forceLogin($user);
+
+				$usercookievalue = $f3->get('COOKIE.RobPress_User'); //get the cookie value
+				$user = $this->controller->db->query("SELECT * FROM users WHERE cookie = '$usercookievalue'"); // retrieve the user row from the database with the uniqid()
+				if (!empty($user)){
+					$this->forceLogin($user[0]); // force login using the first item in the array
+				}else{
+					$f3->reroute('/'); // if it is empty then, reroute to hompage.
+				}
+				
 			}
 		}		
 
@@ -47,6 +67,7 @@
 
 			//Kill the session
 			session_destroy();
+			$f3->clear('SESSION'); // destroy the session
 
 			//Kill the cookie
 			setcookie('RobPress_User','',time()-3600,'/');
@@ -57,16 +78,21 @@
 			//Remove previous session
 			session_destroy();
 
+			$currentUserid = $user['id']; // user id to store the data.
+
+			$userSession = uniqid(rand(),true); //generate a uniquid, storing it in the cookie.
 			//Setup new session
-			session_id(md5($user['id']));
-
+			$f3 = Base::instance();
+			$f3->set("SESSION.id", $userSession); //set up a session variable
 			//store the session in the database
-			//$db = $this->controller->db;
-			//$this->$db->exec('UPDATE users SET `session` = :session WHERE `id` = :id', 
-			//						array('session' => 'test', 'id' => $user['id']));
+			$update = $this->controller->db->query("UPDATE users SET session = '$userSession' WHERE id = $currentUserid");	
 
-			//Setup cookie for storing user details and for relogging in
-			setcookie('RobPress_User',base64_encode(serialize($user)),time()+3600*24*30,'/');
+
+			
+			$usercookie = uniqid(rand(),true); //generate a uniquid, storing it in the cookie.
+			setcookie('RobPress_User',$usercookie,time()+3600*24*30,'/'); //Setup cookie for storing user details and for relogging in
+			//store the cookie in the database
+			$update = $this->controller->db->query("UPDATE users SET cookie = '$usercookie' WHERE id = $currentUserid");			
 
 			//And begin!
 			new Session();
